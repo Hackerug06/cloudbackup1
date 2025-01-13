@@ -3,181 +3,70 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Secure Cloud Storage</title>
+    <title>GitHub Cloud Storage</title>
     <style>
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: 'Segoe UI', system-ui, sans-serif;
         }
 
         body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
             background: #f0f2f5;
             min-height: 100vh;
             padding: 20px;
-            color: #333;
         }
 
         .container {
             max-width: 1200px;
             margin: 0 auto;
+            padding: 20px;
             background: white;
             border-radius: 12px;
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            overflow: hidden;
-        }
-
-        .header {
-            background: #1a73e8;
-            color: white;
-            padding: 20px;
-            text-align: center;
-        }
-
-        .content {
-            padding: 20px;
         }
 
         .login-container {
-            max-width: 400px;
-            margin: 40px auto;
             text-align: center;
+            padding: 40px 20px;
         }
 
         .storage-container {
             display: none;
         }
 
+        h2 {
+            color: #1a73e8;
+            margin-bottom: 20px;
+        }
+
         input[type="password"] {
-            width: 100%;
             padding: 12px;
             margin: 10px 0;
+            width: 100%;
+            max-width: 300px;
             border: 2px solid #e0e0e0;
             border-radius: 8px;
             font-size: 16px;
             transition: border-color 0.3s;
         }
 
-        input[type="password"]:focus {
-            outline: none;
-            border-color: #1a73e8;
-        }
-
-        .upload-area {
-            border: 3px dashed #1a73e8;
-            border-radius: 12px;
-            padding: 40px 20px;
-            text-align: center;
-            margin: 20px 0;
-            background: #f8f9fa;
-            transition: background 0.3s;
-        }
-
-        .upload-area.drag-over {
-            background: #e8f0fe;
-            border-color: #1557b0;
-        }
-
-        .button {
-            background: #1a73e8;
-            color: white;
-            padding: 12px 24px;
-            border: none;
-            border-radius: 8px;
-            font-size: 16px;
-            cursor: pointer;
-            transition: background 0.3s;
-            margin: 5px;
-        }
-
-        .button:hover {
-            background: #1557b0;
-        }
-
-        .button:disabled {
-            background: #ccc;
-            cursor: not-allowed;
-        }
-
-        .file-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-            gap: 20px;
-            margin-top: 20px;
-        }
-
-        .file-card {
-            background: #fff;
-            border: 1px solid #e0e0e0;
-            border-radius: 8px;
-            padding: 15px;
-            text-align: center;
-            transition: transform 0.2s;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-        }
-
-        .file-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-        }
-
-        .file-icon {
-            font-size: 40px;
-            margin-bottom: 10px;
-            color: #1a73e8;
-        }
-
-        .file-name {
-            font-size: 14px;
-            margin: 10px 0;
-            word-break: break-all;
-        }
-
-        .file-size {
-            font-size: 12px;
-            color: #666;
-            margin-bottom: 10px;
-        }
-
         .loading {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(255,255,255,0.9);
             display: none;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
+            text-align: center;
+            padding: 20px;
         }
 
-        .spinner {
-            width: 50px;
-            height: 50px;
-            border: 5px solid #f3f3f3;
-            border-top: 5px solid #1a73e8;
+        .loading-spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #1a73e8;
             border-radius: 50%;
+            width: 40px;
+            height: 40px;
             animation: spin 1s linear infinite;
-        }
-
-        .error-message {
-            background: #ffebee;
-            color: #c62828;
-            padding: 15px;
-            border-radius: 8px;
-            margin: 10px 0;
-            display: none;
-        }
-
-        .success-message {
-            background: #e8f5e9;
-            color: #2e7d32;
-            padding: 15px;
-            border-radius: 8px;
-            margin: 10px 0;
-            display: none;
+            margin: 20px auto;
         }
 
         @keyframes spin {
@@ -185,17 +74,96 @@
             100% { transform: rotate(360deg); }
         }
 
-        @media (max-width: 768px) {
-            .container {
-                margin: 0;
-                border-radius: 0;
-            }
+        .file-upload-container {
+            margin: 20px 0;
+            padding: 20px;
+            border: 2px dashed #1a73e8;
+            border-radius: 8px;
+            text-align: center;
+        }
 
-            .content {
+        .file-input-wrapper {
+            margin: 10px 0;
+        }
+
+        input[type="file"] {
+            display: none;
+        }
+
+        .custom-file-upload {
+            display: inline-block;
+            padding: 12px 24px;
+            background: #1a73e8;
+            color: white;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        button {
+            padding: 12px 24px;
+            background: #1a73e8;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background 0.3s;
+            margin: 5px;
+        }
+
+        button:disabled {
+            background: #cccccc;
+            cursor: not-allowed;
+        }
+
+        .gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .media-item {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+            transition: transform 0.3s;
+        }
+
+        .media-item img, 
+        .media-item video {
+            max-width: 100%;
+            height: auto;
+            border-radius: 4px;
+            margin-bottom: 10px;
+        }
+
+        .file-name {
+            font-size: 14px;
+            color: #666;
+            margin: 8px 0;
+            word-break: break-all;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #666;
+        }
+
+        @media (max-width: 600px) {
+            .container {
                 padding: 10px;
             }
 
-            .button {
+            .gallery {
+                grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+                gap: 10px;
+            }
+
+            button {
                 width: 100%;
                 margin: 5px 0;
             }
@@ -204,193 +172,138 @@
 </head>
 <body>
     <div class="container">
-        <div class="header">
-            <h1>Secure Cloud Storage</h1>
+        <div id="loginSection" class="login-container">
+            <h2>GitHub Cloud Storage</h2>
+            <input type="password" id="passwordInput" placeholder="Enter password">
+            <button onclick="checkPassword()">Login</button>
         </div>
         
-        <div class="content">
-            <div id="errorMessage" class="error-message"></div>
-            <div id="successMessage" class="success-message"></div>
-
-            <div id="loginSection" class="login-container">
-                <h2>Login to Your Storage</h2>
-                <input type="password" id="passwordInput" placeholder="Enter password" onkeypress="handlePasswordKeyPress(event)">
-                <button class="button" onclick="login()">Access Storage</button>
-            </div>
-
-            <div id="storageSection" class="storage-container">
-                <div class="upload-area" id="uploadArea">
-                    <h3>Upload Files</h3>
-                    <p>Drag & drop files here or click to select</p>
-                    <input type="file" id="fileInput" multiple style="display: none;">
-                    <button class="button" onclick="document.getElementById('fileInput').click()">
-                        Select Files
-                    </button>
-                </div>
-
-                <div id="fileGrid" class="file-grid">
-                    <!-- Files will be displayed here -->
+        <div id="storageSection" class="storage-container">
+            <h2>My Cloud Storage</h2>
+            <div class="file-upload-container">
+                <div class="file-input-wrapper">
+                    <label for="fileInput" class="custom-file-upload">
+                        Choose Files
+                    </label>
+                    <input type="file" id="fileInput" accept="image/*,video/*" multiple>
                 </div>
             </div>
-        </div>
-    </div>
 
-    <div class="loading" id="loading">
-        <div>
-            <div class="spinner"></div>
-            <p style="margin-top: 20px; text-align: center;" id="loadingText">Loading...</p>
+            <div id="loadingSection" class="loading">
+                <div class="loading-spinner"></div>
+                <p id="loadingText">Loading...</p>
+            </div>
+            
+            <div id="emptyState" class="empty-state">
+                <img src="/api/placeholder/150/150" alt="Empty folder">
+                <h3>No files uploaded yet</h3>
+                <p>Upload your first file by clicking the Choose Files button above</p>
+            </div>
+
+            <div id="gallery" class="gallery">
+                <!-- Media items will be displayed here -->
+            </div>
         </div>
     </div>
 
     <script>
-        // Configuration
-        const CONFIG = {
-            password: "QWer12@*1436",
-            github: {
-                token: "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",
-                username: "Hackerug06",
-                repo: "cloudbackup1",
-                branch: "main"
-            }
-        };
+        const CORRECT_PASSWORD = "QWer12@*1436";
+        const GITHUB_TOKEN = "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"; // Add your new GitHub token here
+        const GITHUB_USERNAME = "Hackerug06";
+        const GITHUB_REPO = "cloudbackup1";
+        const GITHUB_API = "https://api.github.com";
 
-        // Event Listeners
-        document.addEventListener('DOMContentLoaded', initializeApp);
+        let uploadedFiles = [];
 
-        const uploadArea = document.getElementById('uploadArea');
-        uploadArea.addEventListener('dragover', (e) => {
-            e.preventDefault();
-            uploadArea.classList.add('drag-over');
+        document.getElementById('fileInput').addEventListener('change', function(e) {
+            const files = Array.from(e.target.files);
+            uploadFiles(files);
         });
-
-        uploadArea.addEventListener('dragleave', () => {
-            uploadArea.classList.remove('drag-over');
-        });
-
-        uploadArea.addEventListener('drop', handleFileDrop);
-
-        document.getElementById('fileInput').addEventListener('change', handleFileSelect);
-
-        // Core Functions
-        function initializeApp() {
-            setupDragAndDrop();
-            checkAuthentication();
-        }
-
-        function showMessage(type, message) {
-            const element = document.getElementById(`${type}Message`);
-            element.textContent = message;
-            element.style.display = 'block';
-            setTimeout(() => {
-                element.style.display = 'none';
-            }, 5000);
-        }
 
         function showLoading(message = 'Loading...') {
-            document.getElementById('loading').style.display = 'flex';
-            document.getElementById('loadingText').textContent = message;
+            const loading = document.getElementById('loadingSection');
+            const loadingText = document.getElementById('loadingText');
+            loadingText.textContent = message;
+            loading.style.display = 'block';
         }
 
         function hideLoading() {
-            document.getElementById('loading').style.display = 'none';
+            document.getElementById('loadingSection').style.display = 'none';
         }
 
-        async function login() {
+        async function checkPassword() {
             const password = document.getElementById('passwordInput').value;
-            if (password === CONFIG.password) {
+            if (password === CORRECT_PASSWORD) {
                 document.getElementById('loginSection').style.display = 'none';
                 document.getElementById('storageSection').style.display = 'block';
-                await loadFiles();
+                await loadExistingFiles();
             } else {
-                showMessage('error', 'Incorrect password. Please try again.');
+                alert('Incorrect password!');
             }
         }
 
-        function handlePasswordKeyPress(event) {
-            if (event.key === 'Enter') {
-                login();
-            }
-        }
-
-        async function loadFiles() {
-            showLoading('Loading your files...');
+        async function loadExistingFiles() {
+            showLoading('Loading existing files...');
             try {
-                const response = await fetch(`https://api.github.com/repos/${CONFIG.github.username}/${CONFIG.github.repo}/contents/uploads`, {
+                const response = await fetch(`${GITHUB_API}/repos/${GITHUB_USERNAME}/${GITHUB_REPO}/contents/uploads`, {
                     headers: {
-                        'Authorization': `Bearer ${CONFIG.github.token}`,
+                        'Authorization': `token ${GITHUB_TOKEN}`,
                         'Accept': 'application/vnd.github.v3+json'
                     }
                 });
 
-                if (!response.ok) {
-                    if (response.status === 404) {
-                        await createUploadsDirectory();
-                        return;
-                    }
-                    throw new Error(`GitHub API returned ${response.status}`);
+                if (response.status === 404) {
+                    // Uploads directory doesn't exist yet
+                    updateGalleryVisibility();
+                    return;
                 }
 
                 const files = await response.json();
-                displayFiles(files);
+                if (Array.isArray(files)) {
+                    uploadedFiles = files;
+                    files.forEach(file => displayGitHubFile(file));
+                }
             } catch (error) {
-                showMessage('error', `Failed to load files: ${error.message}`);
+                console.error('Error loading files:', error);
             } finally {
                 hideLoading();
+                updateGalleryVisibility();
             }
         }
 
-        async function createUploadsDirectory() {
-            try {
-                const content = btoa('# Uploads Directory\nThis directory contains uploaded files.');
-                await fetch(`https://api.github.com/repos/${CONFIG.github.username}/${CONFIG.github.repo}/contents/uploads/README.md`, {
-                    method: 'PUT',
-                    headers: {
-                        'Authorization': `Bearer ${CONFIG.github.token}`,
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        message: 'Create uploads directory',
-                        content: content
-                    })
-                });
-            } catch (error) {
-                showMessage('error', 'Failed to create uploads directory');
+        function updateGalleryVisibility() {
+            const emptyState = document.getElementById('emptyState');
+            const gallery = document.getElementById('gallery');
+            
+            if (uploadedFiles.length === 0) {
+                emptyState.style.display = 'block';
+                gallery.style.display = 'none';
+            } else {
+                emptyState.style.display = 'none';
+                gallery.style.display = 'grid';
             }
         }
 
-        function handleFileDrop(e) {
-            e.preventDefault();
-            uploadArea.classList.remove('drag-over');
-            const files = e.dataTransfer.files;
-            handleFiles(files);
-        }
-
-        function handleFileSelect(e) {
-            const files = e.target.files;
-            handleFiles(files);
-        }
-
-        async function handleFiles(files) {
+        async function uploadFiles(files) {
             for (const file of files) {
-                await uploadFile(file);
+                showLoading(`Uploading ${file.name}...`);
+                try {
+                    const content = await convertToBase64(file);
+                    const response = await uploadToGitHub(file.name, content);
+                    if (response.content) {
+                        uploadedFiles.push(response.content);
+                        displayGitHubFile(response.content);
+                    }
+                } catch (error) {
+                    console.error('Upload failed:', error);
+                    alert(`Failed to upload ${file.name}`);
+                }
             }
-            await loadFiles();
+            hideLoading();
+            updateGalleryVisibility();
         }
 
-        async function uploadFile(file) {
-            showLoading(`Uploading ${file.name}...`);
-            try {
-                const content = await readFileAsBase64(file);
-                await uploadToGitHub(file.name, content);
-                showMessage('success', `Successfully uploaded ${file.name}`);
-            } catch (error) {
-                showMessage('error', `Failed to upload ${file.name}: ${error.message}`);
-            } finally {
-                hideLoading();
-            }
-        }
-
-        function readFileAsBase64(file) {
+        function convertToBase64(file) {
             return new Promise((resolve, reject) => {
                 const reader = new FileReader();
                 reader.onload = () => resolve(reader.result.split(',')[1]);
@@ -401,100 +314,43 @@
 
         async function uploadToGitHub(filename, content) {
             const path = `uploads/${filename}`;
-            const response = await fetch(`https://api.github.com/repos/${CONFIG.github.username}/${CONFIG.github.repo}/contents/${path}`, {
-                method: 'PUT',
-                headers: {
-                    'Authorization': `Bearer ${CONFIG.github.token}`,
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    message: `Upload ${filename}`,
-                    content: content
-                })
-            });
-
-            if (!response.ok) {
-                throw new Error(`Upload failed: ${await response.text()}`);
-            }
-
-            return response.json();
-        }
-
-        function displayFiles(files) {
-            const grid = document.getElementById('fileGrid');
-            grid.innerHTML = '';
-
-            files.forEach(file => {
-                if (file.name === 'README.md') return;
-
-                const card = document.createElement('div');
-                card.className = 'file-card';
-                
-                card.innerHTML = `
-                    <div class="file-icon">📄</div>
-                    <div class="file-name">${file.name}</div>
-                    <div class="file-size">${formatFileSize(file.size)}</div>
-                    <button class="button" onclick="downloadFile('${file.download_url}', '${file.name}')">
-                        Download
-                    </button>
-                    <button class="button" style="background: #dc3545" onclick="deleteFile('${file.path}', '${file.sha}')">
-                        Delete
-                    </button>
-                `;
-
-                grid.appendChild(card);
-            });
-        }
-
-        async function downloadFile(url, filename) {
-            showLoading('Preparing download...');
             try {
-                const response = await fetch(url);
-                const blob = await response.blob();
-                const downloadUrl = window.URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = downloadUrl;
-                a.download = filename;
-                document.body.appendChild(a);
-                a.click();
-                window.URL.revokeObjectURL(downloadUrl);
-                document.body.removeChild(a);
-            } catch (error) {
-                showMessage('error', `Failed to download ${filename}`);
-            } finally {
-                hideLoading();
-            }
-        }
-
-        async function deleteFile(path, sha) {
-            if (!confirm('Are you sure you want to delete this file?')) return;
-
-            showLoading('Deleting file...');
-            try {
-                const response = await fetch(`https://api.github.com/repos/${CONFIG.github.username}/${CONFIG.github.repo}/contents/${path}`, {
-                    method: 'DELETE',
+                const response = await fetch(`${GITHUB_API}/repos/${GITHUB_USERNAME}/${GITHUB_REPO}/contents/${path}`, {
+                    method: 'PUT',
                     headers: {
-                        'Authorization': `Bearer ${CONFIG.github.token}`,
-                        'Content-Type': 'application/json'
+                        'Authorization': `token ${GITHUB_TOKEN}`,
+                        'Content-Type': 'application/json',
                     },
                     body: JSON.stringify({
-                        message: `Delete ${path}`,
-                        sha: sha
+                        message: `Upload ${filename}`,
+                        content: content
                     })
                 });
-
-                if (!response.ok) {
-                    throw new Error('Failed to delete file');
-                }
-
-                showMessage('success', 'File deleted successfully');
-                await loadFiles();
+                
+                return await response.json();
             } catch (error) {
-                showMessage('error', `Failed to delete file: ${error.message}`);
-            } finally {
-                hideLoading();
+                console.error('GitHub upload failed:', error);
+                throw error;
             }
         }
 
-        function formatFileSize(bytes) {
-            const</antArtifact>
+        function displayGitHubFile(fileInfo) {
+            const gallery = document.getElementById('gallery');
+            const mediaItem = document.createElement('div');
+            mediaItem.className = 'media-item';
+            
+            const fileName = document.createElement('div');
+            fileName.className = 'file-name';
+            fileName.textContent = fileInfo.name;
+            mediaItem.appendChild(fileName);
+            
+            const downloadBtn = document.createElement('button');
+            downloadBtn.textContent = 'Download';
+            downloadBtn.onclick = () => window.open(fileInfo.download_url);
+            mediaItem.appendChild(downloadBtn);
+            
+            gallery.appendChild(mediaItem);
+        }
+    </script>
+</body>
+    </html>
