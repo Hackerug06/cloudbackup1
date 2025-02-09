@@ -1,3 +1,4 @@
+```json
 {
   "name": "hackerug06-backend",
   "version": "1.0.0",
@@ -29,9 +30,6 @@
     "yn": "^3.1.1"
   },
   "description": ""
-},
-"scripts": {
-  "start": "node dist/server.js",
-  "build": "tsc",
-  "dev": "ts-node src/server.ts"
 }
+```
+
