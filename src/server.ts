@@ -7,7 +7,12 @@ import bcrypt from "bcrypt"
 dotenv.config()
 
 const app = express()
-app.use(cors())
+app.use(
+  cors({
+    origin: process.env.FRONTEND_URL,
+    credentials: true,
+  }),
+)
 app.use(express.json())
 
 const users: { email: string; password: string }[] = []
@@ -25,10 +30,10 @@ app.post("/signup", async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, 10)
     users.push({ email, password: hashedPassword })
     const token = jwt.sign({ email }, process.env.JWT_SECRET as string)
-    res.json({ token })
+    res.json({ token, message: "Thank You For Signing Up With Hackerug06 Technologies" })
   } catch (error) {
     console.error("Signup error:", error)
-    res.status(500).json({ error: "Internal server error" })
+    res.status(500).json({ error: "Internal server error", details: error.message })
   }
 })
 
@@ -44,7 +49,7 @@ app.post("/login", async (req, res) => {
     }
   } catch (error) {
     console.error("Login error:", error)
-    res.status(500).json({ error: "Internal server error" })
+    res.status(500).json({ error: "Internal server error", details: error.message })
   }
 })
 
