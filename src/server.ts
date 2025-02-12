@@ -6,7 +6,7 @@ import bcrypt from "bcrypt"
 import nodemailer from "nodemailer"
 import { parsePhoneNumber } from "libphonenumber-js"
 import crypto from "crypto"
-import { InfobipClient, type SendSmsMessageOptions } from "@infobip-api/sdk"
+import { SmsClient, type SmsMessage } from "@infobip-api/sdk"
 
 dotenv.config()
 
@@ -38,7 +38,7 @@ const transporter = nodemailer.createTransport({
   },
 })
 
-const infobipClient = new InfobipClient({
+const smsClient = new SmsClient({
   baseUrl: process.env.INFOBIP_BASE_URL,
   apiKey: process.env.INFOBIP_API_KEY,
 })
@@ -98,17 +98,13 @@ app.post("/signup", async (req, res) => {
     } else {
       const verificationCode = verificationToken.slice(0, 6)
 
-      const smsOptions: SendSmsMessageOptions = {
-        messages: [
-          {
-            destinations: [{ to: identifier }],
-            text: `Your Hackerug06 Technologies verification code is: ${verificationCode}`,
-            from: process.env.INFOBIP_SENDER_ID,
-          },
-        ],
+      const smsMessage: SmsMessage = {
+        destinations: [{ to: identifier }],
+        text: `Your Hackerug06 Technologies verification code is: ${verificationCode}`,
+        from: process.env.INFOBIP_SENDER_ID,
       }
 
-      await infobipClient.channels.sms.send(smsOptions)
+      await smsClient.send(smsMessage)
 
       res.json({ message: "Please check your phone for the verification code", verificationToken })
     }
@@ -156,4 +152,4 @@ app.post("/login", async (req, res) => {
 const PORT = process.env.PORT || 5000
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`))
 
-  
+        
