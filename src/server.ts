@@ -6,7 +6,7 @@ import bcrypt from "bcrypt"
 import nodemailer from "nodemailer"
 import { parsePhoneNumber } from "libphonenumber-js"
 import crypto from "crypto"
-import { SmsApi, Configuration } from "@infobip-api/sdk"
+import { InfobipClient, type SendSmsMessageOptions } from "@infobip-api/sdk"
 
 dotenv.config()
 
@@ -38,12 +38,10 @@ const transporter = nodemailer.createTransport({
   },
 })
 
-const infobipConfig = new Configuration({
-  basePath: process.env.INFOBIP_BASE_URL,
+const infobipClient = new InfobipClient({
+  baseUrl: process.env.INFOBIP_BASE_URL,
   apiKey: process.env.INFOBIP_API_KEY,
 })
-
-const smsApi = new SmsApi(infobipConfig)
 
 app.post("/signup", async (req, res) => {
   try {
@@ -100,7 +98,7 @@ app.post("/signup", async (req, res) => {
     } else {
       const verificationCode = verificationToken.slice(0, 6)
 
-      await smsApi.sendSmsMessage({
+      const smsOptions: SendSmsMessageOptions = {
         messages: [
           {
             destinations: [{ to: identifier }],
@@ -108,7 +106,9 @@ app.post("/signup", async (req, res) => {
             from: process.env.INFOBIP_SENDER_ID,
           },
         ],
-      })
+      }
+
+      await infobipClient.channels.sms.send(smsOptions)
 
       res.json({ message: "Please check your phone for the verification code", verificationToken })
     }
@@ -122,7 +122,7 @@ app.post("/verify", (req, res) => {
   const { token, code } = req.body
   const user = users.find((u) => u.verificationToken === token)
 
-  if (user) {
+  if (user && user.verificationToken) {
     if (code && code !== user.verificationToken.slice(0, 6)) {
       return res.status(400).json({ error: "Invalid verification code" })
     }
