@@ -31,7 +31,7 @@ const users: User[] = []
 
 const transporter = nodemailer.createTransport({
   host: process.env.SMTP_HOST,
-  port: Number.parseInt(process.env.SMTP_PORT || "587"),
+  port: Number(process.env.SMTP_PORT) || 587,
   auth: {
     user: process.env.SMTP_USER,
     pass: process.env.SMTP_PASS,
@@ -120,9 +120,9 @@ app.post("/signup", async (req, res) => {
 
 app.post("/verify", (req, res) => {
   const { token, code } = req.body
-  const user = users.find((u) => u.verificationToken === token && u.verificationToken !== undefined)
+  const user = users.find((u) => u.verificationToken === token)
 
-  if (user && user.verificationToken) {
+  if (user) {
     if (code && code !== user.verificationToken.slice(0, 6)) {
       return res.status(400).json({ error: "Invalid verification code" })
     }
