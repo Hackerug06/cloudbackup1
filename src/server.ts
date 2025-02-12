@@ -112,7 +112,7 @@ app.post("/signup", async (req, res) => {
 
       res.json({ message: "Please check your phone for the verification code", verificationToken })
     }
-  } catch (error) {
+  } catch (error: any) {
     console.error("Signup error:", error)
     res.status(500).json({ error: "Internal server error", details: error.message })
   }
@@ -120,9 +120,9 @@ app.post("/signup", async (req, res) => {
 
 app.post("/verify", (req, res) => {
   const { token, code } = req.body
-  const user = users.find((u) => u.verificationToken === token)
+  const user = users.find((u) => u.verificationToken === token && u.verificationToken !== undefined)
 
-  if (user) {
+  if (user && user.verificationToken) {
     if (code && code !== user.verificationToken.slice(0, 6)) {
       return res.status(400).json({ error: "Invalid verification code" })
     }
@@ -147,7 +147,7 @@ app.post("/login", async (req, res) => {
     } else {
       res.status(400).json({ error: "Invalid credentials" })
     }
-  } catch (error) {
+  } catch (error: any) {
     console.error("Login error:", error)
     res.status(500).json({ error: "Internal server error", details: error.message })
   }
@@ -156,4 +156,4 @@ app.post("/login", async (req, res) => {
 const PORT = process.env.PORT || 5000
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`))
 
-        
+  
