@@ -6,7 +6,7 @@ import bcrypt from "bcrypt"
 import nodemailer from "nodemailer"
 import { parsePhoneNumber } from "libphonenumber-js"
 import crypto from "crypto"
-import { SmsClient, type SmsMessage } from "@infobip-api/sdk"
+import twilio from "twilio"
 
 dotenv.config()
 
@@ -38,10 +38,7 @@ const transporter = nodemailer.createTransport({
   },
 })
 
-const smsClient = new SmsClient({
-  baseUrl: process.env.INFOBIP_BASE_URL,
-  apiKey: process.env.INFOBIP_API_KEY,
-})
+const twilioClient = twilio(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN)
 
 app.post("/signup", async (req, res) => {
   try {
@@ -98,13 +95,11 @@ app.post("/signup", async (req, res) => {
     } else {
       const verificationCode = verificationToken.slice(0, 6)
 
-      const smsMessage: SmsMessage = {
-        destinations: [{ to: identifier }],
-        text: `Your Hackerug06 Technologies verification code is: ${verificationCode}`,
-        from: process.env.INFOBIP_SENDER_ID,
-      }
-
-      await smsClient.send(smsMessage)
+      await twilioClient.messages.create({
+        body: `Your Hackerug06 Technologies verification code is: ${verificationCode}`,
+        from: process.env.TWILIO_PHONE_NUMBER,
+        to: identifier,
+      })
 
       res.json({ message: "Please check your phone for the verification code", verificationToken })
     }
@@ -152,4 +147,4 @@ app.post("/login", async (req, res) => {
 const PORT = process.env.PORT || 5000
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`))
 
-        
+  
