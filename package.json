@@ -15,7 +15,7 @@
     "bcrypt": "^5.0.1",
     "nodemailer": "^6.6.3",
     "libphonenumber-js": "^1.9.34",
-    "@infobip-api/sdk": "^0.3.0",
+    "twilio": "^3.76.0",
     "axios": "^0.21.1"
   },
   "devDependencies": {
@@ -30,4 +30,3 @@
   }
 }
 
-  
